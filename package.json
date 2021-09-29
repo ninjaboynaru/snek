@@ -1,0 +1,20 @@
+{
+	"name": "snek",
+	"private": true,
+	"scripts": {
+		"build:js": "webpack",
+		"watch:js": "npm run build:js -- --watch",
+		"start:dev-server": "webpack-serve"
+	},
+	"devDependencies": {
+		"eslint": "^7.2.0",
+		"eslint-config-airbnb-base": "^14.2.1",
+		"eslint-loader": "^4.0.2",
+		"eslint-plugin-import": "^2.22.1",
+		"webpack": "^5.53.0",
+		"webpack-cli": "^4.8.0"
+	},
+	"dependencies": {
+		"pixi.js": "^6.1.3"
+	}
+}
