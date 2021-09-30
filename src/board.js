@@ -66,13 +66,17 @@ const board = new function() {
 	function createFruit(tileX, tileY) {
 		const graphic = new pixi.Graphics();
 		const tile = getTile(tileX, tileY);
+		const fruitCoords = { x: -1, y: -1 };
 		const tileCenterCoords = {
 			x: tile.xCoord + (gameConfig.tileSize / 2),
 			y: tile.yCoord + (gameConfig.tileSize / 2)
 		};
 
+		fruitCoords.x = Math.floor(tileCenterCoords.x - (gameConfig.fruitSize / 2));
+		fruitCoords.y = Math.floor(tileCenterCoords.y - (gameConfig.fruitSize / 2));
+
 		graphic.beginFill(gameConfig.fruitColor);
-		graphic.drawCircle(tileCenterCoords.x, tileCenterCoords.y, gameConfig.fruitSize);
+		graphic.drawRoundedRect(fruitCoords.x, fruitCoords.y, gameConfig.fruitSize, gameConfig.fruitSize, gameConfig.fruitRadius);
 		graphic.endFill();
 
 		return {
@@ -125,14 +129,14 @@ const board = new function() {
 		return false;
 	}
 
-	function tileHasFruit(tileX, tileY) {
+	function getFruitOnTile(tileX, tileY) {
 		for (const fruit of fruits) {
 			if (fruit.tile.xIndex === tileX && fruit.tile.yIndex === tileY) {
-				return true;
+				return fruit;
 			}
 		}
 
-		return false;
+		return null;
 	}
 
 	this.init = function init(pixiApp) {
@@ -224,18 +228,17 @@ const board = new function() {
 		return tileHasSnake(nextTileIndex.x, nextTileIndex.y);
 	};
 
-	this.snakeWillHitFruit = function snakeWillHitFruit(direction) {
+	this.getSnakeNextFruit = function getSnakeNextFruit(direction) {
 		const headTile = snake[0].tile;
 		const nextTileIndex = getNextTileIndex(direction, headTile);
-
-		return tileHasFruit(nextTileIndex.x, nextTileIndex.y);
+		return getFruitOnTile(nextTileIndex.x, nextTileIndex.y);
 	};
 
 	this.spawnRandomFruit = function spawnRandomFruit() {
 		while (true) {
 			const xIndex = randomInt(0, boardInfo.xTilesCount - 1);
 			const yIndex = randomInt(0, boardInfo.yTilesCount - 1);
-			const tileOccupied = tileHasFruit(xIndex, yIndex) || tileHasSnake(xIndex, yIndex);
+			const tileOccupied = getFruitOnTile(xIndex, yIndex) || tileHasSnake(xIndex, yIndex);
 
 			if (tileOccupied === true) {
 				continue;
@@ -246,6 +249,17 @@ const board = new function() {
 			app.stage.addChild(fruit.graphic);
 			break;
 		}
+	};
+
+	this.removeFruit = function removeFruit(fruit) {
+		const fruitIndex = fruits.indexOf(fruit);
+		fruits.splice(fruitIndex, 1);
+
+		app.stage.removeChild(fruit.graphic);
+	};
+
+	this.getFruitCount = function getFruitCount() {
+		return fruits.length;
 	};
 }();
 

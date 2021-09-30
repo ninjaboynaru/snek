@@ -1,7 +1,7 @@
 import board from './board';
 import DIRECTIONS from './directions';
 import gameConfig from './gameConfig';
-import { directionToVector } from './util';
+import { directionToVector, randomInt } from './util';
 
 const controller = new function() {
 	let keyDirection = null;
@@ -21,7 +21,7 @@ const controller = new function() {
 		}
 	}
 
-	function update() {
+	function movementUpdate() {
 		const snakeDirection = board.getSnakeDirection();
 		let finalDirection = snakeDirection;
 
@@ -40,14 +40,15 @@ const controller = new function() {
 
 		const willHitWall = board.snakeWillHitWall(finalDirection);
 		const willHitSnake = board.snakeWillHitSnake(finalDirection);
-		const willHitFruit = board.snakeWillHitFruit(finalDirection);
+		const fruitOnNextTile = board.getSnakeNextFruit(finalDirection);
 
 		if (willHitWall || willHitSnake) {
 			return;
 		}
 
-		if (willHitFruit) {
+		if (fruitOnNextTile) {
 			board.growSnake();
+			board.removeFruit(fruitOnNextTile);
 		}
 
 		board.moveSnake(directionToVector(finalDirection));
@@ -55,9 +56,21 @@ const controller = new function() {
 		keyDirection = null;
 	}
 
+	function spawnUpdate() {
+		if (board.getFruitCount() >= gameConfig.maxFruitOnBoard) {
+			return;
+		}
+
+		const toSpawnCount = randomInt(gameConfig.minSpawnCount, gameConfig.maxSpawnCount);
+		for (let i = 0; i < toSpawnCount; i++) {
+			board.spawnRandomFruit();
+		}
+	}
+
 	this.init = function init() {
 		document.addEventListener('keydown', onKeyDown);
-		setInterval(update, gameConfig.updateRate);
+		setInterval(movementUpdate, gameConfig.movementRate);
+		setInterval(spawnUpdate, gameConfig.spawnRate);
 	};
 }();
 
