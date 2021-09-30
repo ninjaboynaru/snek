@@ -6,6 +6,25 @@ function randomInt(minArg, maxArg) {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+function directionToVector(direction) {
+	const vec = { x: 0, y: 0 };
+
+	if (direction === DIRECTIONS.LEFT) {
+		vec.x = -1;
+	}
+	else if (direction === DIRECTIONS.RIGHT) {
+		vec.x = 1;
+	}
+	else if (direction === DIRECTIONS.UP) {
+		vec.y = -1;
+	}
+	else if (direction === DIRECTIONS.DOWN) {
+		vec.y = 1;
+	}
+
+	return vec;
+}
+
 function getNextTileIndex(direction, currentTile) {
 	const directionVector = { x: 0, y: 0 };
 
@@ -25,4 +44,4 @@ function getNextTileIndex(direction, currentTile) {
 	return { x: currentTile.xIndex + directionVector.x, y: currentTile.yIndex + directionVector.y };
 }
 
-export { randomInt, getNextTileIndex };
+export { randomInt, directionToVector, getNextTileIndex };

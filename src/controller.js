@@ -1,53 +1,63 @@
 import board from './board';
 import DIRECTIONS from './directions';
+import gameConfig from './gameConfig';
+import { directionToVector } from './util';
 
 const controller = new function() {
-	function getKeyEventDirection(event) {
+	let keyDirection = null;
+
+	function onKeyDown(event) {
 		if (event.key === 'w' || event.key === 'ArrowUp') {
-			return DIRECTIONS.UP;
+			keyDirection = DIRECTIONS.UP;
 		}
 		if (event.key === 's' || event.key === 'ArrowDown') {
-			return DIRECTIONS.DOWN;
+			keyDirection = DIRECTIONS.DOWN;
 		}
 		if (event.key === 'a' || event.key === 'ArrowLeft') {
-			return DIRECTIONS.LEFT;
+			keyDirection = DIRECTIONS.LEFT;
 		}
 		if (event.key === 'd' || event.key === 'ArrowRight') {
-			return DIRECTIONS.RIGHT;
+			keyDirection = DIRECTIONS.RIGHT;
 		}
 	}
 
-	function onKeyDown(event) {
+	function update() {
 		const snakeDirection = board.getSnakeDirection();
-		const keyDirection = getKeyEventDirection(event);
-		const willHitWall = board.snakeWillHitWall(keyDirection);
-		const willHitSnake = board.snakeWillHitSnake(keyDirection);
-		const willHitFruit = board.snakeWillHitFruit(keyDirection);
+		let finalDirection = snakeDirection;
 
-		if (willHitWall === true || willHitSnake === true) {
+		if (keyDirection === DIRECTIONS.UP && snakeDirection !== DIRECTIONS.DOWN) {
+			finalDirection = keyDirection;
+		}
+		else if (keyDirection === DIRECTIONS.DOWN && snakeDirection !== DIRECTIONS.UP) {
+			finalDirection = keyDirection;
+		}
+		else if (keyDirection === DIRECTIONS.LEFT && snakeDirection !== DIRECTIONS.RIGHT) {
+			finalDirection = keyDirection;
+		}
+		else if (keyDirection === DIRECTIONS.RIGHT && snakeDirection !== DIRECTIONS.LEFT) {
+			finalDirection = keyDirection;
+		}
+
+		const willHitWall = board.snakeWillHitWall(finalDirection);
+		const willHitSnake = board.snakeWillHitSnake(finalDirection);
+		const willHitFruit = board.snakeWillHitFruit(finalDirection);
+
+		if (willHitWall || willHitSnake) {
 			return;
 		}
 
-		if (keyDirection === DIRECTIONS.UP && snakeDirection !== DIRECTIONS.DOWN) {
-			board.moveSnake({ y: -1 });
-		}
-		else if (keyDirection === DIRECTIONS.DOWN && snakeDirection !== DIRECTIONS.UP) {
-			board.moveSnake({ y: 1 });
-		}
-		else if (keyDirection === DIRECTIONS.LEFT && snakeDirection !== DIRECTIONS.RIGHT) {
-			board.moveSnake({ x: -1 });
-		}
-		else if (keyDirection === DIRECTIONS.RIGHT && snakeDirection !== DIRECTIONS.LEFT) {
-			board.moveSnake({ x: 1 });
-		}
-
-		if (willHitFruit === true) {
+		if (willHitFruit) {
 			board.growSnake();
 		}
+
+		board.moveSnake(directionToVector(finalDirection));
+
+		keyDirection = null;
 	}
 
 	this.init = function init() {
 		document.addEventListener('keydown', onKeyDown);
+		setInterval(update, gameConfig.updateRate);
 	};
 }();
 
