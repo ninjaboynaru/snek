@@ -1,7 +1,9 @@
 import * as pixi from 'pixi.js';
+import tilemap from './tilemap';
+import structures from './structures';
 import gameConfig from './gameConfig';
 import DIRECTIONS from './directions';
-import { getNextTileIndex, randomInt } from './util';
+import { getNextTileIndex, randomChance, randomInt } from './util';
 
 const board = new function() {
 	let app;
@@ -10,23 +12,39 @@ const board = new function() {
 	const snake = [];
 	const fruits = [];
 
-	function createTile(xIndex, yIndex) {
-		const yCoord = yIndex * gameConfig.tileSize;
+	function createTile(xIndex, yIndex, tileId, partOfStructure = false) {
 		const xCoord = xIndex * gameConfig.tileSize;
-		const graphic = new pixi.Graphics();
+		const yCoord = yIndex * gameConfig.tileSize;
 
-		graphic.lineStyle(gameConfig.tileBorderSize, gameConfig.tileBorderColor);
-		graphic.beginFill(gameConfig.tileColor);
-		graphic.drawRect(xCoord, yCoord, gameConfig.tileSize, gameConfig.tileSize);
-		graphic.endFill();
+		const sprite = tilemap.createTileSprite(tileId);
+		sprite.position.set(xCoord, yCoord);
+		sprite.width = gameConfig.tileSize;
+		sprite.height = gameConfig.tileSize;
 
 		return {
 			xCoord,
 			yCoord,
 			xIndex,
 			yIndex,
-			graphic
+			partOfStructure,
+			sprite
 		};
+	}
+
+	function replaceTileSprite(xIndex, yIndex, partOfStructure = false, tileId) {
+		const tile = tiles[yIndex][xIndex];
+		const newSprite = tilemap.createTileSprite(tileId);
+		const oldSprite = tile.sprite;
+		newSprite.x = oldSprite.x;
+		newSprite.y = oldSprite.y;
+		newSprite.width = oldSprite.width;
+		newSprite.height = oldSprite.height;
+
+		tile.partOfStructure = partOfStructure;
+		tile.sprite = newSprite;
+
+		app.stage.removeChild(oldSprite);
+		app.stage.addChild(newSprite);
 	}
 
 	function getTile(xIndex, yIndex) {
@@ -97,13 +115,76 @@ const board = new function() {
 			const row = [];
 
 			for (let x = 0; x < boardInfo.xTilesCount; x++) {
-				const tile = createTile(x, y);
-				app.stage.addChild(tile.graphic);
+				const tile = createTile(x, y, 6, false);
+				app.stage.addChild(tile.sprite);
 				row.push(tile);
 			}
 
 			tiles.push(row);
 		}
+	}
+
+	function forEachTile(fn) {
+		for (let y = 0; y < tiles.length; y++) {
+			const row = tiles[y];
+
+			for (let x = 0; x < row.length; x++) {
+				const tile = row[x];
+				fn(row, tile, { x, y });
+			}
+		}
+	}
+
+	function forEachStructureTile(startTile, structure, fn) {
+		for (let y = 0; y < structure.length; y++) {
+			const structureRow = structure[y];
+
+			for (let x = 0; x < structureRow.length; x++) {
+				const structureTileIndex = { x: startTile.xIndex + x, y: startTile.yIndex + y };
+				const tileIndexInBounds = structureTileIndex.x < boardInfo.xTilesCount && structureTileIndex.y < boardInfo.yTilesCount;
+				const id = structureRow[x];
+				let structureTile = null;
+
+				if (tileIndexInBounds === true) {
+					structureTile = tiles[structureTileIndex.y][structureTileIndex.x];
+				}
+
+				const endForEach = fn(structureTileIndex, tileIndexInBounds, structureTile, id);
+				if (endForEach === true) {
+					return;
+				}
+			}
+		}
+	}
+
+	function canBuildStructureOnTile(tile, structure) {
+		let canBuild = true;
+
+		forEachStructureTile(tile, structure, (structureTileIndex, tileIndexInBounds, structureTile) => {
+			if (tileIndexInBounds === false || structureTile.partOfStructure === true) {
+				canBuild = false;
+				return true;
+			}
+		});
+
+		return canBuild;
+	}
+
+	function setupStructures() {
+		forEachTile((index, tile) => {
+			if (tile.partOfStructure === true || randomChance(gameConfig.structureSpawnChance) === false) {
+				return;
+			}
+
+			const structure = structures.getRandomStructure();
+			if (canBuildStructureOnTile(tile, structure) === false) {
+				return;
+			}
+
+			forEachStructureTile(tile, structure, (structureTileIndex, tileIndexInBounds, structureTile, tileId) => {
+				replaceTileSprite(structureTile.xIndex, structureTile.yIndex, true, tileId);
+			});
+		});
 	}
 
 	function setupSnake() {
@@ -138,13 +219,6 @@ const board = new function() {
 
 		return null;
 	}
-
-	this.init = function init(pixiApp) {
-		app = pixiApp;
-		setupBoardInfo();
-		setupTiles();
-		setupSnake();
-	};
 
 	this.moveSnake = function moveSnake({ x = 0, y = 0 }) {
 		let previousSnakePart;
@@ -260,6 +334,15 @@ const board = new function() {
 
 	this.getFruitCount = function getFruitCount() {
 		return fruits.length;
+	};
+
+	this.init = async function init(pixiApp) {
+		app = pixiApp;
+		await tilemap.init();
+		setupBoardInfo();
+		setupTiles();
+		setupStructures();
+		setupSnake();
 	};
 }();
 

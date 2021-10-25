@@ -10,9 +10,9 @@ const app = new pixi.Application({
 	antialias: true
 });
 
-function start() {
+async function start() {
 	document.getElementById('view').appendChild(app.view);
-	board.init(app);
+	await board.init(app);
 	controller.init();
 }
 

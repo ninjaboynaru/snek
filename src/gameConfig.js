@@ -13,6 +13,7 @@ export default {
 	tileColor: 0x00FF00,
 	tileBorderColor: 0x0DAA00,
 	tileBorderSize: 1,
+	structureSpawnChance: 12,
 
 	snakeSize: 30,
 	snakeColor: 0x800080,
