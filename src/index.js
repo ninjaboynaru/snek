@@ -1,19 +1,9 @@
-import * as pixi from 'pixi.js';
-import gameConfig from './gameConfig';
-import board from './board';
-import controller from './controller';
+import world from './world/world';
+import spawnTiles from './spawnTiles';
+import player from './player';
 
-const app = new pixi.Application({
-	width: gameConfig.viewWidth,
-	height: gameConfig.viewHeight,
-	backgroundColor: gameConfig.viewBackgroundColor,
-	antialias: true
+document.addEventListener('DOMContentLoaded', async() => {
+	world.init();
+	await spawnTiles();
+	player.init();
 });
-
-async function start() {
-	document.getElementById('view').appendChild(app.view);
-	await board.init(app);
-	controller.init();
-}
-
-document.addEventListener('DOMContentLoaded', start);
