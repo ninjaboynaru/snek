@@ -37,6 +37,11 @@ export default new function player() {
 			const rotationBeforeMove = bodyPart.getRotation();
 
 			if (isHead) {
+				const targetPosition = bodyPart.getPosition().add(Vector2.fromDirection(moveDirection));
+				if (world.positionInBounds(targetPosition) === false) {
+					return;
+				}
+
 				bodyPart.moveDirection(moveDirection);
 				bodyPart.rotate(rotationFromDirection(moveDirection));
 			}

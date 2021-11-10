@@ -20,6 +20,18 @@ export default new function world() {
 		document.getElementById(config.appContainerElementID).appendChild(app.view);
 	};
 
+	this.positionInBounds = function positionInBounds(position) {
+		if (position.x <= 0 || position.x >= this.worldSize.x) {
+			return false;
+		}
+
+		if (position.y <= 0 || position.y >= this.worldSize.y) {
+			return false;
+		}
+
+		return true;
+	};
+
 	this.renderDisplayObject = function renderDisplayObject(pixiDisplayObject) {
 		app.stage.addChild(pixiDisplayObject);
 	};
