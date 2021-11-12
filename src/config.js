@@ -13,5 +13,7 @@ export default {
 		maxSpawnCount: 3,
 		maxInWorld: 6,
 		maxSpawnAttempts: 100
-	}
+	},
+
+	structureSpawnChance: 10
 };

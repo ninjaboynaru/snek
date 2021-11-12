@@ -65,4 +65,8 @@ export default class Vector2 {
 		this.y *= -1;
 		return this;
 	}
+
+	equals(vec) {
+		return this.x === vec.x && this.y === vec.y;
+	}
 }

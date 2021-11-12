@@ -2,15 +2,10 @@ import config from './config';
 import Vector2 from './vector2';
 import Entity from './world/entity';
 import world from './world/world';
+import { randomIntInclusive } from './util';
 import TAG from './tag';
 
 const coinImgPath = 'graphics/gold_coin.png';
-
-function randomIntInclusive(min, max) {
-	min = Math.ceil(min);
-	max = Math.floor(max);
-	return Math.floor(Math.random() * (max - min + 1) + min); // The maximum is inclusive and the minimum is inclusive
-}
 
 function getEmptyPosition() {
 	let attempts = 0;

@@ -3,7 +3,7 @@ import config from '../config';
 import Vector2 from '../vector2';
 import world from './world';
 
-export default function Entity({ sprite, position, blockSize, spriteImgPath, anchor, tag }) {
+export default function Entity({ sprite, position, blockSize, spriteImgPath, anchor, tag, meta = {} }) {
 	const entityInfo = {
 		sprite,
 		position,
@@ -13,6 +13,7 @@ export default function Entity({ sprite, position, blockSize, spriteImgPath, anc
 	};
 
 	this.tag = tag;
+	this.meta = meta;
 
 	if (!sprite && spriteImgPath) {
 		entityInfo.sprite = Sprite.from(spriteImgPath);
