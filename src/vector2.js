@@ -21,6 +21,23 @@ export default class Vector2 {
 		}
 	}
 
+	static fromAngle(angle) {
+		switch (angle) {
+			case 0:
+				return new Vector2({ x: 0, y: -1 });
+			case 90:
+				return new Vector2({ x: 1, y: 0 });
+			case 180:
+				return new Vector2({ x: 0, y: 1 });
+			case 270:
+				return new Vector2({ x: -1, y: 0 });
+			case 360:
+				return new Vector2({ x: 0, y: -1 });
+			default:
+				return null;
+		}
+	}
+
 	copy() {
 		return new Vector2({ x: this.x, y: this.y });
 	}

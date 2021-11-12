@@ -52,14 +52,23 @@ export default new function world() {
 		entities.splice(entityIndex, 1);
 	};
 
-	this.getEntityAtPostion = function getEntityAtPostion(position) {
+	this.getEntitiesAtPosition = function getEntitiesAtPosition(position, tagFilters) {
+		const entitiesAtPos = [];
+
 		for (const entity of entities) {
 			const entityPosition = entity.getPosition();
 			if (entityPosition.x === position.x && entityPosition.y === position.y) {
-				return entity;
+				if (tagFilters) {
+					if (tagFilters.includes(entity.tag)) {
+						entitiesAtPos.push(entity);
+					}
+				}
+				else {
+					return entitiesAtPos.push(entity);
+				}
 			}
 		}
 
-		return null;
+		return entitiesAtPos;
 	};
 }();

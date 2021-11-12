@@ -21,8 +21,8 @@ function getEmptyPosition() {
 			y: randomIntInclusive(0, world.worldSize.y - 1)
 		});
 
-		const entityAtPos = world.getEntityAtPostion(randomPosition);
-		if (entityAtPos && entityAtPos.tag === TAG.PLAYER) {
+		const entitiesAtPos = world.getEntitiesAtPosition(randomPosition, [TAG.PLAYER, TAG.COIN]);
+		if (entitiesAtPos.length > 0) {
 			continue;
 		}
 
@@ -57,6 +57,15 @@ export default new function collectables() {
 				anchor: 0.5,
 				tag: TAG.COIN
 			}));
+		}
+	};
+
+	this.removeCoin = function removeCoin(coin) {
+		const coinIndex = coins.indexOf(coin);
+
+		if (coinIndex !== -1) {
+			coin.prepDelete();
+			coins.splice(coinIndex, 1);
 		}
 	};
 }();

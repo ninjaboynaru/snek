@@ -4,6 +4,7 @@ import world from './world/world';
 import Entity from './world/entity';
 import DIRECTION from './direction';
 import TAG from './tag';
+import collectables from './collectables';
 
 const headImg = 'graphics/player_head.png';
 const tailImg = 'graphics/player_tail.png';
@@ -26,6 +27,27 @@ function rotationFromDirection(direction) {
 export default new function player() {
 	const body = [];
 	let moveDirection = DIRECTION.UP;
+
+	function growPlayer() {
+		const playerTailEnd = body[body.length - 1];
+		const tailEndRotation = playerTailEnd.getRotation();
+		const newBodyPartPosition = playerTailEnd.getPosition().add(Vector2.fromAngle(tailEndRotation).invert());
+		const newBodyPart = new Entity({ spriteImgPath: tailImg, position: newBodyPartPosition, anchor: 0.5, blockSize: new Vector2({ x: 1, y: 1 }), tag: TAG.PLAYER });
+
+		newBodyPart.rotate(tailEndRotation);
+		body.push(newBodyPart);
+	}
+
+	function onNewPosition() {
+		const headPosition = body[0].getPosition();
+		const coinsAtPosition = world.getEntitiesAtPosition(headPosition, [TAG.COIN]);
+
+		if (coinsAtPosition.length > 0) {
+			growPlayer();
+			collectables.removeCoin(coinsAtPosition[0]);
+			collectables.spawnCoins();
+		}
+	}
 
 	function moveUpdate() {
 		let previousPartPosition;
@@ -54,6 +76,8 @@ export default new function player() {
 			previousPartPosition = positionBeforeMove;
 			previousPartRotation = rotationBeforeMove;
 		}
+
+		onNewPosition();
 	}
 
 	function keyUpdate(event) {
