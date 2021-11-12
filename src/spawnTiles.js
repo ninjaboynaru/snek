@@ -2,6 +2,7 @@ import { Loader, Texture, Rectangle, Sprite } from 'pixi.js';
 import world from './world/world';
 import Entity from './world/entity';
 import Vector2 from './vector2';
+import TAG from './tag';
 
 const tilemapPath = 'graphics/tiles_packed_reduced.png';
 const tilesPerRow = 12;
@@ -39,9 +40,10 @@ export default async function spawnTiles() {
 		for (let x = 0; x < world.worldSize.x; x++) {
 			// eslint-disable-next-line no-new
 			new Entity({
-				sprite: createTileSprite(39, tilemap),
+				sprite: createTileSprite(6, tilemap),
 				position: new Vector2({ x, y }),
-				blockSize: new Vector2({ x: 1, y: 1 })
+				blockSize: new Vector2({ x: 1, y: 1 }),
+				tag: TAG.TILE
 			});
 		}
 	}

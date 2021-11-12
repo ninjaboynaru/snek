@@ -3,6 +3,7 @@ import Vector2 from './vector2';
 import world from './world/world';
 import Entity from './world/entity';
 import DIRECTION from './direction';
+import TAG from './tag';
 
 const headImg = 'graphics/player_head.png';
 const tailImg = 'graphics/player_tail.png';
@@ -87,7 +88,7 @@ export default new function player() {
 				y: centerBlock.y + (i * offsetVector.y)
 			});
 
-			const bodyPart = new Entity({ spriteImgPath, position, anchor: 0.5, blockSize: new Vector2({ x: 1, y: 1 }) });
+			const bodyPart = new Entity({ spriteImgPath, position, anchor: 0.5, blockSize: new Vector2({ x: 1, y: 1 }), tag: TAG.PLAYER });
 			bodyPart.rotate(bodyRotation);
 			body.push(bodyPart);
 		}

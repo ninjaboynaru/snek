@@ -3,7 +3,7 @@ import config from '../config';
 import Vector2 from '../vector2';
 import world from './world';
 
-export default function Entity({ sprite, position, blockSize, spriteImgPath, anchor }) {
+export default function Entity({ sprite, position, blockSize, spriteImgPath, anchor, tag }) {
 	const entityInfo = {
 		sprite,
 		position,
@@ -11,6 +11,8 @@ export default function Entity({ sprite, position, blockSize, spriteImgPath, anc
 		pixePosition: null,
 		pixelSize: null
 	};
+
+	this.tag = tag;
 
 	if (!sprite && spriteImgPath) {
 		entityInfo.sprite = Sprite.from(spriteImgPath);
@@ -29,10 +31,10 @@ export default function Entity({ sprite, position, blockSize, spriteImgPath, anc
 	if (anchor) {
 		entityInfo.sprite.anchor.set(anchor);
 	}
+
 	entityInfo.sprite.width = entityInfo.pixelSize.x;
 	entityInfo.sprite.height = entityInfo.pixelSize.y;
 	entityInfo.sprite.position.set(entityInfo.pixelPosition.x, entityInfo.pixelPosition.y);
-	world.renderDisplayObject(entityInfo.sprite);
 
 	this.getPosition = function getPosition() {
 		return entityInfo.position.copy();
@@ -58,6 +60,8 @@ export default function Entity({ sprite, position, blockSize, spriteImgPath, anc
 	};
 
 	this.prepDelete = function prepDelete() {
-		world.removeDisplayObject(entityInfo.sprite);
+		world.removeEntity(this, entityInfo.sprite);
 	};
+
+	world.registerEntity(this, entityInfo.sprite);
 }

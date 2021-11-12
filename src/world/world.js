@@ -3,6 +3,7 @@ import config from '../config';
 import Vector2 from '../vector2';
 
 export default new function world() {
+	const entities = [];
 	let app;
 	this.worldSize = new Vector2({
 		x: Math.floor(config.pixelWorldSize.x / config.pixelBlockSize.x),
@@ -32,11 +33,33 @@ export default new function world() {
 		return true;
 	};
 
-	this.renderDisplayObject = function renderDisplayObject(pixiDisplayObject) {
-		app.stage.addChild(pixiDisplayObject);
-	};
-
 	this.removeDisplayObject = function removeDisplayObject(pixiDisplayObject) {
 		app.stage.removeChild(pixiDisplayObject);
+	};
+
+	this.registerEntity = function registerEntity(entity, entitySprite) {
+		app.stage.addChild(entitySprite);
+		entities.push(entity);
+	};
+
+	this.removeEntity = function removeEntity(entity, entitySprite) {
+		const entityIndex = entities.indexOf(entity);
+		if (entityIndex === -1) {
+			return;
+		}
+
+		app.stage.removeChild(entitySprite);
+		entities.splice(entityIndex, 1);
+	};
+
+	this.getEntityAtPostion = function getEntityAtPostion(position) {
+		for (const entity of entities) {
+			const entityPosition = entity.getPosition();
+			if (entityPosition.x === position.x && entityPosition.y === position.y) {
+				return entity;
+			}
+		}
+
+		return null;
 	};
 }();
