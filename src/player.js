@@ -65,6 +65,11 @@ export default new function player() {
 					return;
 				}
 
+				const playerPartsAtPosition = world.getEntitiesAtPosition(targetPosition, [TAG.PLAYER]);
+				if (playerPartsAtPosition.length > 0) {
+					return;
+				}
+
 				bodyPart.moveDirection(moveDirection);
 				bodyPart.rotate(rotationFromDirection(moveDirection));
 			}

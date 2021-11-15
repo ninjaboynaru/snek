@@ -6,7 +6,7 @@ export default {
 	pixelBlockSize: new Vector2({ x: 30, y: 30 }),
 	worldBackgroundColor: 0x000000,
 
-	playerStartLength: 4,
+	playerStartLength: 6,
 	playerMoveUpdateRate: 120,
 
 	coinSpawn: {
@@ -15,5 +15,5 @@ export default {
 		maxSpawnAttempts: 100
 	},
 
-	structureSpawnChance: 10
+	structureSpawnChance: 5
 };
