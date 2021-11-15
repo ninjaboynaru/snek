@@ -1,11 +1,11 @@
 import world from './world/world';
-import spawnTiles from './spawnTiles';
+import tiles from './tiles';
 import player from './player';
 import collectables from './collectables';
 
 document.addEventListener('DOMContentLoaded', async() => {
 	world.init();
-	await spawnTiles();
+	await tiles.init();
 	player.init();
 	collectables.spawnCoins();
 });

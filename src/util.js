@@ -4,5 +4,8 @@ function randomIntInclusive(min, max) {
 	return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-// eslint-disable-next-line
-export { randomIntInclusive };
+function randomChance(chance) {
+	return randomIntInclusive(1, 100) <= chance;
+}
+
+export { randomIntInclusive, randomChance };

@@ -15,5 +15,5 @@ export default {
 		maxSpawnAttempts: 100
 	},
 
-	structureSpawnChance: 5
+	structureSpawnChance: 2
 };
