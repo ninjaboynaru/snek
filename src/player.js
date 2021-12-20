@@ -4,6 +4,7 @@ import world from './world/world';
 import Entity from './world/entity';
 import DIRECTION from './direction';
 import TAG from './tag';
+import { EVENT, store } from './store';
 import collectables from './collectables';
 
 const headImg = 'graphics/player_head.png';
@@ -27,6 +28,12 @@ function rotationFromDirection(direction) {
 export default new function player() {
 	const body = [];
 	let moveDirection = DIRECTION.UP;
+	let canMove = false;
+
+	function endGame() {
+		canMove = false;
+		store.fire(EVENT.GAME_OVER);
+	}
 
 	function growPlayer() {
 		const playerTailEnd = body[body.length - 1];
@@ -50,6 +57,10 @@ export default new function player() {
 	}
 
 	function moveUpdate() {
+		if (canMove === false) {
+			return;
+		}
+
 		let previousPartPosition;
 		let previousPartRotation;
 
@@ -62,11 +73,13 @@ export default new function player() {
 			if (isHead) {
 				const targetPosition = bodyPart.getPosition().add(Vector2.fromDirection(moveDirection));
 				if (world.positionInBounds(targetPosition) === false) {
+					endGame();
 					return;
 				}
 
 				const playerPartsAtPosition = world.getEntitiesAtPosition(targetPosition, [TAG.PLAYER]);
 				if (playerPartsAtPosition.length > 0) {
+					endGame();
 					return;
 				}
 
@@ -100,7 +113,22 @@ export default new function player() {
 		}
 	}
 
-	this.init = function init() {
+	function clearPlayer() {
+		while (body.length > 0) {
+			body.pop().prepDelete();
+		}
+	}
+
+	this.spawn = function spawn() {
+		if (body.length !== 0) {
+			clearPlayer();
+		}
+		else {
+			document.addEventListener('keydown', keyUpdate);
+			window.setInterval(moveUpdate, config.playerMoveUpdateRate);
+		}
+
+		canMove = true;
 		const centerBlock = world.worldSize.copy().divide(2);
 		const offsetVector = Vector2.fromDirection(moveDirection).invert();
 		const bodyRotation = rotationFromDirection(moveDirection);
@@ -121,8 +149,5 @@ export default new function player() {
 			bodyPart.rotate(bodyRotation);
 			body.push(bodyPart);
 		}
-
-		document.addEventListener('keydown', keyUpdate);
-		window.setInterval(moveUpdate, config.playerMoveUpdateRate);
 	};
 }();

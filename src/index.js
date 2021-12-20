@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', async() => {
 	await tiles.init();
 
 	store.on(EVENT.START, async() => {
-		player.init();
+		player.spawn();
 		collectables.spawnCoins();
 	});
 

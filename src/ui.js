@@ -105,6 +105,11 @@ export default new function ui() {
 			store.fire(EVENT.REGEN);
 		});
 
+		store.on(EVENT.GAME_OVER, () => {
+			startBtn.show();
+			regenBtn.show();
+		});
+
 		startMenu.startBtn = startBtn;
 		startMenu.regenBtn = regenBtn;
 	}
