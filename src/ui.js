@@ -2,7 +2,7 @@ import { Loader, Sprite } from 'pixi.js';
 import world from './world/world';
 import config from './config';
 import Vector2 from './vector2';
-import store from './store';
+import { EVENT, store } from './store';
 
 const menuBackgroundPath = 'graphics/ui/menu_background.png';
 const startButtonPath = 'graphics/ui/start_btn/start_btn.png';
@@ -98,11 +98,11 @@ export default new function ui() {
 		startBtn.onPress(() => {
 			startBtn.hide();
 			regenBtn.hide();
-			store.startGame();
+			store.fire(EVENT.START);
 		});
 
 		regenBtn.onPress(() => {
-			store.regenMap();
+			store.fire(EVENT.REGEN);
 		});
 
 		startMenu.startBtn = startBtn;

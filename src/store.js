@@ -1,32 +1,27 @@
-export default new function store() {
-	const gameStartListeners = [];
-	const mapRegenListeners = [];
+const EVENT = {
+	START: 'START',
+	REGEN: 'REGEN',
+	GAME_OVER: 'GAME_OVER'
+};
 
-	this.onGameStart = function(callback) {
+const store = new function() {
+	const listeners = [];
+
+	this.on = function on(event, callback) {
 		if (typeof callback !== 'function') {
 			return;
 		}
 
-		gameStartListeners.push(callback);
+		listeners.push({ event, callback });
 	};
 
-	this.onMapRegen = function(callback) {
-		if (typeof callback !== 'function') {
-			return;
-		}
-
-		mapRegenListeners.push(callback);
-	};
-
-	this.startGame = function() {
-		for (const callback of gameStartListeners) {
-			callback();
-		}
-	};
-
-	this.regenMap = function() {
-		for (const callback of mapRegenListeners) {
-			callback();
+	this.fire = function fire(event) {
+		for (const listener of listeners) {
+			if (listener.event === event) {
+				listener.callback();
+			}
 		}
 	};
 }();
+
+export { EVENT, store };

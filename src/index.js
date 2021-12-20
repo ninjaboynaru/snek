@@ -3,19 +3,19 @@ import ui from './ui';
 import tiles from './tiles';
 import player from './player';
 import collectables from './collectables';
-import store from './store';
+import { EVENT, store } from './store';
 
 document.addEventListener('DOMContentLoaded', async() => {
 	world.init();
 	ui.init();
 	await tiles.init();
 
-	store.onGameStart(async() => {
+	store.on(EVENT.START, async() => {
 		player.init();
 		collectables.spawnCoins();
 	});
 
-	store.onMapRegen(() => {
+	store.on(EVENT.REGEN, () => {
 		tiles.regen();
 	});
 });
