@@ -37,6 +37,12 @@ export default function Entity({ sprite, position, blockSize, spriteImgPath, anc
 	entityInfo.sprite.height = entityInfo.pixelSize.y;
 	entityInfo.sprite.position.set(entityInfo.pixelPosition.x, entityInfo.pixelPosition.y);
 
+	world.registerEntity(this, entityInfo.sprite);
+
+	this.prepDelete = function prepDelete() {
+		world.removeEntity(this, entityInfo.sprite);
+	};
+
 	this.getPosition = function getPosition() {
 		return entityInfo.position.copy();
 	};
@@ -59,10 +65,4 @@ export default function Entity({ sprite, position, blockSize, spriteImgPath, anc
 		const targetPosition = entityInfo.position.copy().add(Vector2.fromDirection(direction));
 		this.moveTo(targetPosition);
 	};
-
-	this.prepDelete = function prepDelete() {
-		world.removeEntity(this, entityInfo.sprite);
-	};
-
-	world.registerEntity(this, entityInfo.sprite);
 }

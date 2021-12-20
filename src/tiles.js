@@ -13,6 +13,7 @@ export default new function tiles() {
 	const realTilePixelSize = 200;
 	const defaultTileID = 7;
 	const tileEntities = [];
+	const loader = new Loader();
 	let tilemap;
 
 	function createTileSprite(tileID) {
@@ -113,7 +114,6 @@ export default new function tiles() {
 
 	this.init = async function init() {
 		return new Promise((resolve) => {
-			const loader = Loader.shared;
 			loader.add('tilemap', tilemapPath);
 			loader.load((_, resources) => {
 				tilemap = resources.tilemap.texture;
@@ -121,5 +121,13 @@ export default new function tiles() {
 				resolve();
 			});
 		});
+	};
+
+	this.regen = function regen() {
+		while (tileEntities.length > 0) {
+			tileEntities.pop().prepDelete();
+		}
+
+		spawnTiles();
 	};
 }();

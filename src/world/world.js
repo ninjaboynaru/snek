@@ -1,10 +1,13 @@
-import { Application } from 'pixi.js';
+import { Application, Container } from 'pixi.js';
 import config from '../config';
 import Vector2 from '../vector2';
 
 export default new function world() {
 	const entities = [];
 	let app;
+	const entityContainer = new Container();
+	const uiContainer = new Container();
+
 	this.worldSize = new Vector2({
 		x: Math.floor(config.pixelWorldSize.x / config.pixelBlockSize.x),
 		y: Math.floor(config.pixelWorldSize.y / config.pixelBlockSize.y)
@@ -17,6 +20,8 @@ export default new function world() {
 			backgroundColor: config.worldBackgroundColor,
 			antialias: true
 		});
+
+		app.stage.addChild(entityContainer, uiContainer);
 
 		document.getElementById(config.appContainerElementID).appendChild(app.view);
 	};
@@ -33,12 +38,16 @@ export default new function world() {
 		return true;
 	};
 
-	this.removeDisplayObject = function removeDisplayObject(pixiDisplayObject) {
-		app.stage.removeChild(pixiDisplayObject);
+	this.registerUIElement = function registerUIElement(sprite) {
+		uiContainer.addChild(sprite);
+	};
+
+	this.removeUIElement = function removeUIElement(sprite) {
+		uiContainer.removeChild(sprite);
 	};
 
 	this.registerEntity = function registerEntity(entity, entitySprite) {
-		app.stage.addChild(entitySprite);
+		entityContainer.addChild(entitySprite);
 		entities.push(entity);
 	};
 
@@ -48,7 +57,7 @@ export default new function world() {
 			return;
 		}
 
-		app.stage.removeChild(entitySprite);
+		entityContainer.removeChild(entitySprite);
 		entities.splice(entityIndex, 1);
 	};
 
