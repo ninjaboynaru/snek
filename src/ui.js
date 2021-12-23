@@ -5,6 +5,8 @@ import Vector2 from './vector2';
 import { EVENT, store } from './store';
 
 const menuBackgroundPath = 'graphics/ui/menu_background.png';
+const mainHeaderPath = 'graphics/ui/main_header.png';
+const gameOverHeaderPath = 'graphics/ui/game_over_header.png';
 const startButtonPath = 'graphics/ui/start_btn/start_btn.png';
 const startButtonPressedPath = 'graphics/ui/start_btn/start_btn_pressed.png';
 const restartButtonPath = 'graphics/ui/restart_btn/restart_btn.png';
@@ -112,6 +114,8 @@ export default new function ui() {
 	const loader = new Loader();
 
 	function buildStartMenu(_, resources) {
+		const mainHeader = new UIElement({ texture: resources[mainHeaderPath].texture });
+		const gameOverHeader = new UIElement({ texture: resources[gameOverHeaderPath].texture });
 		const startBtn = new UIElement({ texture: resources[startButtonPath].texture, hoverTexture: resources[startButtonPressedPath].texture });
 		const restartBtn = new UIElement({ texture: resources[restartButtonPath].texture, hoverTexture: resources[restartButtonPressedPath].texture });
 		const regenBtn = new UIElement({ texture: resources[regenButtonPath].texture, hoverTexture: resources[regenButtonPressedPath].texture });
@@ -120,19 +124,24 @@ export default new function ui() {
 		restartBtn.setWidth(0.2);
 		regenBtn.setWidth(0.2);
 
+		mainHeader.setPosition(new Vector2({ x: 0.5, y: 0.43 }));
+		gameOverHeader.setPosition(new Vector2({ x: 0.5, y: 0.4 }));
 		startBtn.setPosition(new Vector2({ x: 0.5, y: 0.5 }));
 		restartBtn.setPosition(new Vector2({ x: 0.5, y: 0.5 }));
 		regenBtn.setPosition(new Vector2({ x: 0.5, y: 0.55 }));
 
 		restartBtn.hide();
+		gameOverHeader.hide();
 
 		startBtn.onPress(() => {
+			mainHeader.hide();
 			startBtn.hide();
 			regenBtn.hide();
 			store.fire(EVENT.START);
 		});
 
 		restartBtn.onPress(() => {
+			gameOverHeader.hide();
 			restartBtn.hide();
 			regenBtn.hide();
 			store.fire(EVENT.START);
@@ -143,6 +152,7 @@ export default new function ui() {
 		});
 
 		store.on(EVENT.GAME_OVER, () => {
+			gameOverHeader.show();
 			restartBtn.show();
 			regenBtn.show();
 		});
@@ -151,6 +161,8 @@ export default new function ui() {
 	this.init = function init() {
 		loader.add([
 			menuBackgroundPath,
+			mainHeaderPath,
+			gameOverHeaderPath,
 			startButtonPath,
 			startButtonPressedPath,
 			restartButtonPath,
