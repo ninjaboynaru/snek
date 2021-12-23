@@ -7,16 +7,56 @@ import { EVENT, store } from './store';
 const menuBackgroundPath = 'graphics/ui/menu_background.png';
 const startButtonPath = 'graphics/ui/start_btn/start_btn.png';
 const startButtonPressedPath = 'graphics/ui/start_btn/start_btn_pressed.png';
+const restartButtonPath = 'graphics/ui/restart_btn/restart_btn.png';
+const restartButtonPressedPath = 'graphics/ui/restart_btn/restart_btn_pressed.png';
 const regenButtonPath = 'graphics/ui/regen_btn/regen_btn.png';
 const regenButtonPressedPath = 'graphics/ui/regen_btn/regen_btn_pressed.png';
 
-function UIElement({ texture, pressedTexture } = {}) {
+function UIElement({ texture, pressedTexture, hoverTexture } = {}) {
 	const sprite = Sprite.from(texture);
 	const heightToWidthRatio = texture.height / texture.width;
 	let onPressCallback;
 
 	sprite.anchor.set(0.5);
 	world.registerUIElement(sprite);
+
+	function pointerDown() {
+		if (pressedTexture) {
+			sprite.texture = pressedTexture;
+		}
+
+		if (onPressCallback) {
+			onPressCallback();
+		}
+	}
+
+	function pointerUp() {
+		if (pressedTexture) {
+			sprite.texture = texture;
+		}
+	}
+
+	function pointerOver() {
+		if (hoverTexture) {
+			sprite.texture = hoverTexture;
+		}
+	}
+
+	function pointerOut() {
+		if (hoverTexture) {
+			sprite.texture = texture;
+		}
+	}
+
+	if (pressedTexture || hoverTexture || onPressCallback) {
+		sprite.interactive = true;
+		sprite.buttonMode = true;
+
+		sprite.on('pointerdown', pointerDown);
+		sprite.on('pointerup', pointerUp);
+		sprite.on('pointerover', pointerOver);
+		sprite.on('pointerout', pointerOut);
+	}
 
 	this.prepDelete = function prepDelete() {
 		world.removeDisplayObject(sprite);
@@ -60,43 +100,40 @@ function UIElement({ texture, pressedTexture } = {}) {
 		sprite.addChild(childSprite);
 	};
 
-	function pointerDown() {
-		sprite.texture = pressedTexture;
-		if (typeof onPressCallback === 'function') {
-			onPressCallback();
-		}
-	}
-
-	function pointerUp() {
-		sprite.texture = texture;
-	}
-
 	this.onPress = function(callback) {
-		sprite.interactive = true;
-		sprite.buttonMode = true;
+		if (typeof callback !== 'function') {
+			return;
+		}
 		onPressCallback = callback;
-
-		sprite.on('pointerdown', pointerDown);
-		sprite.on('pointerup', pointerUp);
 	};
 }
 
 export default new function ui() {
-	const startMenu = { startBtn: null, regenBtn: null };
 	const loader = new Loader();
 
 	function buildStartMenu(_, resources) {
-		const startBtn = new UIElement({ texture: resources[startButtonPath].texture, pressedTexture: resources[startButtonPressedPath].texture });
-		const regenBtn = new UIElement({ texture: resources[regenButtonPath].texture, pressedTexture: resources[regenButtonPressedPath].texture });
+		const startBtn = new UIElement({ texture: resources[startButtonPath].texture, hoverTexture: resources[startButtonPressedPath].texture });
+		const restartBtn = new UIElement({ texture: resources[restartButtonPath].texture, hoverTexture: resources[restartButtonPressedPath].texture });
+		const regenBtn = new UIElement({ texture: resources[regenButtonPath].texture, hoverTexture: resources[regenButtonPressedPath].texture });
 
 		startBtn.setWidth(0.2);
+		restartBtn.setWidth(0.2);
 		regenBtn.setWidth(0.2);
 
 		startBtn.setPosition(new Vector2({ x: 0.5, y: 0.5 }));
+		restartBtn.setPosition(new Vector2({ x: 0.5, y: 0.5 }));
 		regenBtn.setPosition(new Vector2({ x: 0.5, y: 0.55 }));
+
+		restartBtn.hide();
 
 		startBtn.onPress(() => {
 			startBtn.hide();
+			regenBtn.hide();
+			store.fire(EVENT.START);
+		});
+
+		restartBtn.onPress(() => {
+			restartBtn.hide();
 			regenBtn.hide();
 			store.fire(EVENT.START);
 		});
@@ -106,12 +143,9 @@ export default new function ui() {
 		});
 
 		store.on(EVENT.GAME_OVER, () => {
-			startBtn.show();
+			restartBtn.show();
 			regenBtn.show();
 		});
-
-		startMenu.startBtn = startBtn;
-		startMenu.regenBtn = regenBtn;
 	}
 
 	this.init = function init() {
@@ -119,6 +153,8 @@ export default new function ui() {
 			menuBackgroundPath,
 			startButtonPath,
 			startButtonPressedPath,
+			restartButtonPath,
+			restartButtonPressedPath,
 			regenButtonPath,
 			regenButtonPressedPath
 		]).load(buildStartMenu);

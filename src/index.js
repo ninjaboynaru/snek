@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', async() => {
 
 	store.on(EVENT.START, async() => {
 		player.spawn();
+		collectables.clear();
 		collectables.spawnCoins();
 	});
 

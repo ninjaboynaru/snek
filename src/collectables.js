@@ -55,6 +55,12 @@ export default new function collectables() {
 		}
 	};
 
+	this.clear = function clear() {
+		while (coins.length > 0) {
+			coins.pop().prepDelete();
+		}
+	};
+
 	this.removeCoin = function removeCoin(coin) {
 		const coinIndex = coins.indexOf(coin);
 
