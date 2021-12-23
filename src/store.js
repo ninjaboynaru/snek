@@ -1,7 +1,8 @@
 const EVENT = {
 	START: 'START',
 	REGEN: 'REGEN',
-	GAME_OVER: 'GAME_OVER'
+	GAME_OVER: 'GAME_OVER',
+	SCORE: 'SCORE'
 };
 
 const store = new function() {
@@ -15,10 +16,10 @@ const store = new function() {
 		listeners.push({ event, callback });
 	};
 
-	this.fire = function fire(event) {
+	this.fire = function fire(event, msg) {
 		for (const listener of listeners) {
 			if (listener.event === event) {
-				listener.callback();
+				listener.callback(msg);
 			}
 		}
 	};

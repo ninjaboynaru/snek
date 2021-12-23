@@ -29,9 +29,11 @@ export default new function player() {
 	const body = [];
 	let moveDirection = DIRECTION.UP;
 	let canMove = false;
+	let score = 0;
 
 	function endGame() {
 		canMove = false;
+		score = 0;
 		store.fire(EVENT.GAME_OVER);
 	}
 
@@ -51,6 +53,9 @@ export default new function player() {
 
 		if (coinsAtPosition.length > 0) {
 			growPlayer();
+			score += 1;
+			store.fire(EVENT.SCORE, { score });
+
 			collectables.removeCoin(coinsAtPosition[0]);
 			collectables.spawnCoins();
 		}

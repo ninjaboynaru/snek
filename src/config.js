@@ -7,7 +7,7 @@ export default {
 	worldBackgroundColor: 0x000000,
 
 	playerStartLength: 6,
-	playerMoveUpdateRate: 100,
+	playerMoveUpdateRate: 80,
 
 	coinSpawn: {
 		maxSpawnCount: 4,

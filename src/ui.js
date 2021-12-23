@@ -1,7 +1,8 @@
-import { Loader, Sprite } from 'pixi.js';
+import { Loader, Sprite, Text, TextStyle } from 'pixi.js';
 import world from './world/world';
 import config from './config';
 import Vector2 from './vector2';
+import { positionWorldPercent } from './util';
 import { EVENT, store } from './store';
 
 const menuBackgroundPath = 'graphics/ui/menu_background.png';
@@ -64,10 +65,6 @@ function UIElement({ texture, pressedTexture, hoverTexture } = {}) {
 		world.removeDisplayObject(sprite);
 	};
 
-	this.getSprite = function getSprite() {
-		return sprite;
-	};
-
 	this.show = function show() {
 		sprite.visible = true;
 	};
@@ -77,11 +74,7 @@ function UIElement({ texture, pressedTexture, hoverTexture } = {}) {
 	};
 
 	this.setPosition = function setPosition(position) {
-		const absolutePosition = new Vector2({
-			x: config.pixelWorldSize.x * position.x,
-			y: config.pixelWorldSize.y * position.y
-		});
-
+		const absolutePosition = positionWorldPercent(position);
 		sprite.position.set(absolutePosition.x, absolutePosition.y);
 	};
 
@@ -93,20 +86,54 @@ function UIElement({ texture, pressedTexture, hoverTexture } = {}) {
 		sprite.height = absoluteHeight;
 	};
 
-	this.addChild = function addChild(uiElement) {
-		const childSprite = uiElement.getSprite();
-		if (childSprite.parent) {
-			childSprite.parent.removeChild(childSprite);
-		}
-
-		sprite.addChild(childSprite);
-	};
-
 	this.onPress = function(callback) {
 		if (typeof callback !== 'function') {
 			return;
 		}
 		onPressCallback = callback;
+	};
+}
+
+function UIText({ content = '' } = {}) {
+	const text = new Text(content, new TextStyle({
+		fontFamily: 'consolas',
+		fontSize: 12,
+		fontWeight: 'bold',
+		fill: '#000000'
+	}));
+
+	text.resolution = 2;
+	world.registerUIElement(text);
+
+	this.setPosition = function setPosition(position) {
+		const absolutePosition = positionWorldPercent(position);
+		text.position.set(absolutePosition.x, absolutePosition.y);
+	};
+
+	this.setAnchor = function setAnchor(anchor) {
+		text.anchor.set(anchor.x, anchor.y);
+	};
+
+	this.setStyle = function setStyle(styleObject) {
+		for (const key in styleObject) {
+			text.style[key] = styleObject[key];
+		}
+	};
+
+	this.setContent = function setContent(textContent) {
+		text.text = textContent;
+	};
+
+	this.show = function show() {
+		text.visible = true;
+	};
+
+	this.hide = function hide() {
+		text.visible = false;
+	};
+
+	this.prepDelete = function prepDelete() {
+		world.removeUIElement(text);
 	};
 }
 
@@ -119,16 +146,33 @@ export default new function ui() {
 		const startBtn = new UIElement({ texture: resources[startButtonPath].texture, hoverTexture: resources[startButtonPressedPath].texture });
 		const restartBtn = new UIElement({ texture: resources[restartButtonPath].texture, hoverTexture: resources[restartButtonPressedPath].texture });
 		const regenBtn = new UIElement({ texture: resources[regenButtonPath].texture, hoverTexture: resources[regenButtonPressedPath].texture });
+		const scoreText = new UIText();
 
 		startBtn.setWidth(0.2);
 		restartBtn.setWidth(0.2);
 		regenBtn.setWidth(0.2);
+		scoreText.setAnchor(new Vector2({ x: 1, y: 0 }));
+
+		scoreText.setStyle({
+			fontSize: 24,
+			fontWeight: 'bold',
+			fill: '#ebcf32',
+			stroke: '#000000',
+			strokeThickness: 1,
+			dropShadow: true,
+			dropShadowColor: '#000000',
+			dropShadowBlur: 4,
+			dropShadowAngle: Math.PI / 6,
+			dropShadowDistance: 6
+
+		});
 
 		mainHeader.setPosition(new Vector2({ x: 0.5, y: 0.43 }));
 		gameOverHeader.setPosition(new Vector2({ x: 0.5, y: 0.4 }));
 		startBtn.setPosition(new Vector2({ x: 0.5, y: 0.5 }));
 		restartBtn.setPosition(new Vector2({ x: 0.5, y: 0.5 }));
 		regenBtn.setPosition(new Vector2({ x: 0.5, y: 0.55 }));
+		scoreText.setPosition(new Vector2({ x: 1, y: 0 }));
 
 		restartBtn.hide();
 		gameOverHeader.hide();
@@ -149,6 +193,14 @@ export default new function ui() {
 
 		regenBtn.onPress(() => {
 			store.fire(EVENT.REGEN);
+		});
+
+		store.on(EVENT.START, () => {
+			scoreText.setContent('Score: 0');
+		});
+
+		store.on(EVENT.SCORE, ({ score }) => {
+			scoreText.setContent(`Score: ${score}`);
 		});
 
 		store.on(EVENT.GAME_OVER, () => {
