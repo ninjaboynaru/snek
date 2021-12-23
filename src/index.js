@@ -1,5 +1,5 @@
 import world from './world/world';
-import ui from './ui';
+import ui from './ui/ui';
 import tiles from './tiles';
 import player from './player';
 import collectables from './collectables';
