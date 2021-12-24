@@ -49,7 +49,6 @@ export default new function collectables() {
 				position: emptyPosition,
 				blockSize: new Vector2({ x: 1, y: 1 }),
 				spriteImgPath: coinImgPath,
-				anchor: 0.5,
 				tag: TAG.COIN
 			}));
 		}

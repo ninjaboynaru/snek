@@ -2,14 +2,16 @@ import { Sprite } from 'pixi.js';
 import config from '../config';
 import Vector2 from '../vector2';
 import world from './world';
+import { calculateEntityPixelPosition } from '../util';
 
-export default function Entity({ sprite, position, blockSize, spriteImgPath, anchor, tag, meta = {} }) {
+export default function Entity({ sprite, position, blockSize, spriteImgPath, tag, meta = {} }) {
+	const anchor = 0.5;
 	const entityInfo = {
 		sprite,
 		position,
 		blockSize,
-		pixePosition: null,
-		pixelSize: null
+		pixelSize: null,
+		pixePosition: null
 	};
 
 	this.tag = tag;
@@ -24,17 +26,10 @@ export default function Entity({ sprite, position, blockSize, spriteImgPath, anc
 		y: config.pixelBlockSize.y * blockSize.y
 	});
 
-	entityInfo.pixelPosition = new Vector2({
-		x: position.x * config.pixelBlockSize.x,
-		y: position.y * config.pixelBlockSize.y
-	});
-
-	if (anchor) {
-		entityInfo.sprite.anchor.set(anchor);
-	}
-
+	entityInfo.sprite.anchor.set(anchor);
 	entityInfo.sprite.width = entityInfo.pixelSize.x;
 	entityInfo.sprite.height = entityInfo.pixelSize.y;
+	entityInfo.pixelPosition = calculateEntityPixelPosition(entityInfo.position, entityInfo.pixelSize, anchor);
 	entityInfo.sprite.position.set(entityInfo.pixelPosition.x, entityInfo.pixelPosition.y);
 
 	world.registerEntity(this, entityInfo.sprite);
@@ -47,6 +42,10 @@ export default function Entity({ sprite, position, blockSize, spriteImgPath, anc
 		return entityInfo.position.copy();
 	};
 
+	this.getPixelPosition = function getPixelPosition() {
+		return entityInfo.pixelPosition.copy();
+	};
+
 	this.getRotation = function getRotation() {
 		return entityInfo.sprite.angle;
 	};
@@ -57,7 +56,7 @@ export default function Entity({ sprite, position, blockSize, spriteImgPath, anc
 
 	this.moveTo = function moveTo(targetPosition) {
 		entityInfo.position = targetPosition.copy();
-		entityInfo.pixelPosition = targetPosition.copy().multiply(config.pixelBlockSize);
+		entityInfo.pixelPosition = calculateEntityPixelPosition(entityInfo.position, entityInfo.pixelSize, anchor);
 		entityInfo.sprite.position.set(entityInfo.pixelPosition.x, entityInfo.pixelPosition.y);
 	};
 

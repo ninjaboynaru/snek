@@ -32,6 +32,10 @@ export default new function player() {
 	let score = 0;
 
 	function endGame() {
+		if (process.DEV_MODE === true) {
+			return;
+		}
+
 		canMove = false;
 		score = 0;
 		store.fire(EVENT.GAME_OVER);
@@ -77,6 +81,7 @@ export default new function player() {
 
 			if (isHead) {
 				const targetPosition = bodyPart.getPosition().add(Vector2.fromDirection(moveDirection));
+
 				if (world.positionInBounds(targetPosition) === false) {
 					endGame();
 					return;
@@ -116,6 +121,9 @@ export default new function player() {
 		if (moveDirection !== DIRECTION.LEFT && (event.key === 'd' || event.key === 'ArrowRight')) {
 			moveDirection = DIRECTION.RIGHT;
 		}
+		if (process.DEV_MODE === true && event.key === ' ') {
+			moveUpdate();
+		}
 	}
 
 	function clearPlayer() {
@@ -130,7 +138,9 @@ export default new function player() {
 		}
 		else {
 			document.addEventListener('keydown', keyUpdate);
-			window.setInterval(moveUpdate, config.playerMoveUpdateRate);
+			if (process.DEV_MODE === false) {
+				window.setInterval(moveUpdate, config.playerMoveUpdateRate);
+			}
 		}
 
 		canMove = true;
@@ -150,9 +160,12 @@ export default new function player() {
 				y: centerBlock.y + (i * offsetVector.y)
 			});
 
-			const bodyPart = new Entity({ spriteImgPath, position, anchor: 0.5, blockSize: new Vector2({ x: 1, y: 1 }), tag: TAG.PLAYER });
+			const bodyPart = new Entity({ spriteImgPath, position, blockSize: new Vector2({ x: 1, y: 1 }), tag: TAG.PLAYER });
 			bodyPart.rotate(bodyRotation);
 			body.push(bodyPart);
 		}
+
+		window.player = body[0];
+		window.vec = Vector2;
 	};
 }();

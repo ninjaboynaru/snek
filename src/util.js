@@ -20,4 +20,11 @@ function positionWorldPercent(percentPosition) {
 	return absolutePosition;
 }
 
-export { randomIntInclusive, randomChance, positionWorldPercent };
+function calculateEntityPixelPosition(entityPosition, entityPixelSize, anchor) {
+	return new Vector2({
+		x: (entityPosition.x * config.pixelBlockSize.x) + (entityPixelSize.x * anchor),
+		y: (entityPosition.y * config.pixelBlockSize.y) + (entityPixelSize.y * anchor)
+	});
+}
+
+export { randomIntInclusive, randomChance, positionWorldPercent, calculateEntityPixelPosition };

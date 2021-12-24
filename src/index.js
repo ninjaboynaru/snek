@@ -19,4 +19,17 @@ document.addEventListener('DOMContentLoaded', async() => {
 	store.on(EVENT.REGEN, () => {
 		tiles.regen();
 	});
+
+	window.addEventListener('keydown', (event) => {
+		if (process.DEV_MODE === false) {
+			return;
+		}
+
+		if (event.key === 't') {
+			collectables.clear();
+		}
+		if (event.key === 'y') {
+			collectables.spawnCoins();
+		}
+	});
 });
