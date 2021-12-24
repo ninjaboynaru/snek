@@ -6,9 +6,12 @@ import DIRECTION from './direction';
 import TAG from './tag';
 import { EVENT, store } from './store';
 import collectables from './collectables';
+import audio from './audio';
 
 const headImg = 'graphics/player_head.png';
 const tailImg = 'graphics/player_tail.png';
+const coinCollectAudio = 'sounds/coin_collect.wav';
+const gameOverAudio = 'sounds/game_over.wav';
 
 function rotationFromDirection(direction) {
 	switch (direction) {
@@ -36,6 +39,7 @@ export default new function player() {
 			return;
 		}
 
+		audio.play(gameOverAudio);
 		canMove = false;
 		score = 0;
 		store.fire(EVENT.GAME_OVER);
@@ -60,6 +64,7 @@ export default new function player() {
 			score += 1;
 			store.fire(EVENT.SCORE, { score });
 
+			audio.play(coinCollectAudio);
 			collectables.removeCoin(coinsAtPosition[0]);
 			collectables.spawnCoins();
 		}
