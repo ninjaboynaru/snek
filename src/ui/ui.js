@@ -37,7 +37,7 @@ export default new function ui() {
 		elements.scoreText.setPosition(new Vector2({ x: 1, y: 0 }));
 
 		elements.scoreText.setStyle({
-			fontSize: 24,
+			fontSize: 14,
 			fontWeight: 'bold',
 			fill: '#ebcf32',
 			stroke: '#000000',
