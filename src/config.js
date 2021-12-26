@@ -10,8 +10,8 @@ export default {
 	playerMoveUpdateRate: 80,
 
 	coinSpawn: {
-		maxSpawnCount: 4,
-		maxInWorld: 8,
+		maxSpawnCount: 6,
+		maxInWorld: 18,
 		maxSpawnAttempts: 100
 	},
 
