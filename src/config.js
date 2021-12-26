@@ -1,9 +1,9 @@
 import Vector2 from './vector2';
 
 export default {
-	appContainerElementID: 'app-container',
-	pixelWorldSize: new Vector2({ x: 600, y: 600 }),
-	pixelBlockSize: new Vector2({ x: 30, y: 30 }),
+	appContainerElementID: 'game-container',
+	pixelWorldSize: new Vector2({ x: 500, y: 500 }),
+	pixelBlockSize: new Vector2({ x: 25, y: 25 }),
 	worldBackgroundColor: 0x000000,
 
 	playerStartLength: 6,

@@ -4,7 +4,7 @@
 	"scripts": {
 		"build:js": "webpack",
 		"watch:js": "npm run build:js -- --watch",
-		"start:server-dev": "http-server ./dist --port 8080 --cors --o"
+		"start:server-dev": "http-server ./dist --port 8080 --cors --o -c-1"
 	},
 	"devDependencies": {
 		"dotenv": "^10.0.0",

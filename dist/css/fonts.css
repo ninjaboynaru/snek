@@ -1,0 +1,19 @@
+@font-face {
+	font-family: 'bungee';
+	src: url('../fonts/Bungee-Regular.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: 'bungee-hairline';
+	src: url('../fonts/BungeeHairline-Regular.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: 'gruppo';
+	src: url('../fonts/Gruppo-Regular.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: 'barcode39';
+	src: url('../fonts/LibreBarcode39ExtendedText-Regular.ttf') format('truetype');
+}
