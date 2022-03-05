@@ -1,4 +1,11 @@
 # Snek Planes
+An implementation  of the classic Snake game for web browsers, featuring random terrain generation. Graphics engine running on Pixi.js with a custom management system built on top of it.  
+
+[Check it out here](https://ninjaboynaru.github.io/snek/)
+
+
+_Artowrk by [Kenny](https://www.kenney.nl/)_
+
 
 ## Env Varibales
 Define env variblaes in a `.env` file
